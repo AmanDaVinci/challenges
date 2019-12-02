@@ -18,7 +18,7 @@ def draw_letters():
 def input_word(draw):
     """Ask player for a word and validate against draw.
     Use _validation(word, draw) helper."""
-    word = input("Form a word: ")
+    word = input("Form a word: ").lower()
     _validation(word, draw)
     return word
 
@@ -28,10 +28,10 @@ def _validation(word, draw):
     # TODO: Optimize this code
     word_from_draw = True
     for letter in word:
-        if letter.upper() in draw: draw.remove(letter)
+        if letter.upper() in draw: draw.remove(letter.upper())
         else:                      word_from_draw = False; break
     if not word_from_draw or word not in DICTIONARY:
-        raise ValueError
+        raise ValueError("Invalid Word")
 
 # From challenge 01:
 def calc_word_value(word):
@@ -43,20 +43,27 @@ def calc_word_value(word):
 # Maybe you want to abstract this into a class?
 # get_possible_dict_words and _get_permutations_draw would be instance methods.
 # 'draw' would be set in the class constructor (__init__).
-def get_possible_dict_words(draw):
-    """Get all possible words from draw which are valid dictionary words.
-    Use the _get_permutations_draw helper and DICTIONARY constant"""
-    words = _get_permutations_draw(draw)
-    return [word for word in words if word.lower() in DICTIONARY]
 
-def _get_permutations_draw(draw):
-    """Helper for get_possible_dict_words to get all permutations of draw letters.
-    Hint: use itertools.permutations"""
-    words = []
-    for i in range(1,len(draw)+1):
-        for letters in itertools.permutations(draw, i):
-            words.append(''.join(letters))
-    return words
+class WordsGenerator():
+    """ Generates all possible dictionary words from a draw of letters
+    """
+    def __init__(self, draw):
+        self.draw = draw
+
+    def _get_permutations_draw(self):
+        """Helper for get_possible_dict_words to get all permutations of draw letters.
+        Hint: use itertools.permutations"""
+        words = []
+        for i in range(1,len(self.draw)+1):
+            for letters in itertools.permutations(self.draw, i):
+                words.append(''.join(letters))
+        return words
+
+    def get_possible_dict_words(self):
+        """Get all possible words from draw which are valid dictionary words.
+        Use the _get_permutations_draw helper and DICTIONARY constant"""
+        words = self._get_permutations_draw()
+        return [word for word in words if word.lower() in DICTIONARY]
 
 # From challenge 01:
 def max_word_value(words):
@@ -73,7 +80,8 @@ def main():
     word_score = calc_word_value(word)
     print('Word chosen: {} (value: {})'.format(word, word_score))
 
-    possible_words = get_possible_dict_words(draw)
+    word_gen = WordsGenerator(draw)
+    possible_words = word_gen.get_possible_dict_words()
 
     max_word = max_word_value(possible_words)
     max_word_score = calc_word_value(max_word)

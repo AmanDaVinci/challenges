@@ -2,7 +2,7 @@ import itertools
 import unittest
 
 from game import draw_letters, calc_word_value, max_word_value
-from game import get_possible_dict_words, _get_permutations_draw
+from game import WordsGenerator
 from game import _validation
 
 NUM_LETTERS = 7
@@ -26,20 +26,22 @@ class TestGame(unittest.TestCase):
     def test_max_word_value(self):
         self.assertEqual(max_word_value(TEST_WORDS), 'barbeque')
 
-    def test_get_permutations_draw(self):
+    def test_WordGenerator(self):
+        # test WordGenerator._get_permutations_draw()
+        word_gen = WordsGenerator(self.draw)
         gen_permutations_n_letters = sum(len(list(itertools.permutations(self.draw, n))) for n in range(1, NUM_LETTERS+1))
-        game_permutations = len(list(_get_permutations_draw(self.draw)))
+        game_permutations = len(list(word_gen._get_permutations_draw()))
         self.assertEqual(gen_permutations_n_letters, game_permutations)
         alist = range(1,8)
         gen_permutations_any_list = sum(len(list(itertools.permutations(alist, n))) for n in range(1, NUM_LETTERS+1))
         self.assertEqual(gen_permutations_any_list, gen_permutations_n_letters)
-
-    def test_get_possible_dict_words(self):
+        # test WordGenerator.get_possible_dict_words()
         self.fixed_draw = list('garytev'.upper())
-        words = get_possible_dict_words(self.fixed_draw)
+        word_gen = WordsGenerator(self.fixed_draw)
+        words = word_gen.get_possible_dict_words()
         self.assertEqual(len(words), 137)
 
-    def test_validation(self):
+    def test_validation(self):      
         draw = list('garytev'.upper())
         word = 'GARYTEV'
         self.assertRaises(ValueError, _validation, word, draw)
@@ -47,6 +49,11 @@ class TestGame(unittest.TestCase):
         self.assertRaises(ValueError, _validation, word, draw)
         word = 'GARETTA'
         self.assertRaises(ValueError, _validation, word, draw)
+        try:
+            word = 'gary'
+            _validation(word, draw)
+        except:
+            self.fail("_validation() could not handle a valid lower case input")       
 
 if __name__ == "__main__":
    unittest.main() 

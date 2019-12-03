@@ -26,9 +26,10 @@ def input_word(draw):
 def _validation(word, draw):
     """Validations: 1) only use letters of draw, 2) valid dictionary word"""
     # TODO: Optimize this code
+    draw_copy = draw.copy()
     word_from_draw = True
     for letter in word:
-        if letter.upper() in draw: draw.remove(letter.upper())
+        if letter.upper() in draw_copy: draw_copy.remove(letter.upper())
         else:                      word_from_draw = False; break
     if not word_from_draw or word not in DICTIONARY:
         raise ValueError("Invalid Word")

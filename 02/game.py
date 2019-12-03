@@ -18,21 +18,22 @@ def draw_letters():
 def input_word(draw):
     """Ask player for a word and validate against draw.
     Use _validation(word, draw) helper."""
-    word = input("Form a word: ").lower()
-    _validation(word, draw)
-    return word
-
+    while True:
+        try:
+            word = input("Form a word: ").lower()
+            return _validation(word, draw)
+        except ValueError as err:
+            print(err)
+            continue
 
 def _validation(word, draw):
     """Validations: 1) only use letters of draw, 2) valid dictionary word"""
-    # TODO: Optimize this code
-    draw_copy = draw.copy()
-    word_from_draw = True
-    for letter in word:
-        if letter.upper() in draw_copy: draw_copy.remove(letter.upper())
-        else:                      word_from_draw = False; break
-    if not word_from_draw or word not in DICTIONARY:
-        raise ValueError("Invalid Word")
+    unused_letters = draw.copy()
+    for letter in word.upper():
+        if letter in unused_letters: unused_letters.remove(letter)
+        else: raise ValueError(f"{letter} in your word is not from the draw.")
+    if word not in DICTIONARY: raise ValueError(f"{word} is not in Dictionary.")    
+    return word
 
 # From challenge 01:
 def calc_word_value(word):
@@ -63,8 +64,9 @@ class WordsGenerator():
     def get_possible_dict_words(self):
         """Get all possible words from draw which are valid dictionary words.
         Use the _get_permutations_draw helper and DICTIONARY constant"""
-        words = self._get_permutations_draw()
-        return [word for word in words if word.lower() in DICTIONARY]
+        possible_words = self._get_permutations_draw()
+        return [word for word in possible_words 
+                if word.lower() in DICTIONARY]
 
 # From challenge 01:
 def max_word_value(words):

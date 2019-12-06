@@ -31,14 +31,11 @@ def get_similarities(tags):
     Hint 1: compare each tag, use for in for, or product from itertools (already imported)
     Hint 2: use SequenceMatcher (imported) to calculate the similarity ratio
     Bonus: for performance gain compare the first char of each tag in pair and continue if not the same"""
-    similar_pairs = []
-    tags.sort(key=lambda x: len(x))
-    for pair in  product(tags, tags):
-        ratio = SequenceMatcher(None, *pair).ratio()
-        if ratio>SIMILAR and ratio!=1:
-            if (pair[1],pair[0]) not in similar_pairs:
-                similar_pairs.append(pair)
-    return similar_pairs
+    for pair in product(tags, tags):
+        pair = tuple(sorted(pair))
+        similarity = SequenceMatcher(None, *pair).ratio()
+        if SIMILAR < similarity < IDENTICAL:
+            yield pair
 
 if __name__ == "__main__":
     tags = get_tags()

@@ -23,7 +23,7 @@ def get_top_tags(tags):
     """Get the TOP_NUMBER of most common tags
     Hint: use most_common method of Counter (already imported)"""
     tag_counts = Counter(tags)
-    return tag_counts.most_common(10)
+    return tag_counts.most_common(TOP_NUMBER)
 
 
 def get_similarities(tags):
@@ -32,6 +32,7 @@ def get_similarities(tags):
     Hint 2: use SequenceMatcher (imported) to calculate the similarity ratio
     Bonus: for performance gain compare the first char of each tag in pair and continue if not the same"""
     similar_pairs = []
+    tags.sort(key=lambda x: len(x))
     for pair in  product(tags, tags):
         ratio = SequenceMatcher(None, *pair).ratio()
         if ratio>SIMILAR and ratio!=1:
